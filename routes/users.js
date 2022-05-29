@@ -1,5 +1,5 @@
 const router = require('express').Router();
-
+const { celebrate, Joi } = require('celebrate');
 // импорт контроллеров пользователя
 const {
   getUser,
@@ -12,6 +12,12 @@ const {
 router.get('/me', getUser);
 
 // PATCH /users/me обновляет информацию о пользователе (email и имя)
-router.patch('/me', updateUser);
+router.patch('/me', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
+  }),
+}), updateUser);
 
 module.exports = router;
