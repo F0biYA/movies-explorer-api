@@ -1,35 +1,27 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
 
+const { validateSignin, validateSignup } = require('../middlewares/validation');
 const { createUser, loginUser } = require('../controllers/users');
 const auth = require('../middlewares/auth');
 const NotFoundError = require('../errors/notFoundError');
+const userRouter = require('./users');
+const movieRouter = require('./movies');
 
 // запуск роутеров без авторизации
 // Валидация по полям name, email, password
-router.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), createUser);
+router.post('/signup', validateSignup, createUser);
 
 // Валидация по полям email, password
-router.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), loginUser);
+router.post('/signin', validateSignin, loginUser);
 
 // защита маршрутов авторизацией
 router.use(auth);
-router.use('/users', require('./users'));
-router.use('/movie', require('./movies'));
+router.use('/users', userRouter);
+router.use('/movies', movieRouter);
 
-router.use((req, res, next) => {
-  next(new NotFoundError('Не найдено'));
+// ошибка при не найденной странице
+router.use('*', () => {
+  throw new NotFoundError('Страница не найдена');
 });
 
 module.exports = router;

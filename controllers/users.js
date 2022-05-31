@@ -28,8 +28,7 @@ module.exports.createUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные при создании пользователя'));
-      }
-      if (err.code === 11000) {
+      } else if (err.code === 11000) {
         next(new ConflictError('Этот Email уже существует'));
       } else {
         next(err);
@@ -47,14 +46,9 @@ module.exports.getUser = (req, res, next) => {
         res.status(200).send(user);
       }
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequestError('Некорректные'));
-      } else {
-        next(err);
-      }
-    });
+    .catch((err) => next(err));
 };
+
 // обновляет информацию о пользователе (email и имя)
 module.exports.updateUser = (req, res, next) => {
   const { name, email } = req.body;
@@ -64,11 +58,14 @@ module.exports.updateUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Некорректные данные'));
+      } else if (err.code === 11000) {
+        next(new ConflictError('Этот Email уже существует'));
       } else {
         next(err);
       }
     });
 };
+
 // контроллер Login
 module.exports.loginUser = (req, res, next) => {
   const { email, password } = req.body;

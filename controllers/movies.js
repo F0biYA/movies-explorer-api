@@ -9,7 +9,7 @@ const ForbiddenError = require('../errors/forbiddenError');
 // все фильмы
 module.exports.getMovies = (req, res, next) => {
   Movie.find({})
-    .then((card) => res.status(200).send(card))
+    .then((movie) => res.status(200).send(movie))
     .catch((err) => next(err));
 };
 
@@ -34,7 +34,7 @@ module.exports.createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   })
-    .then((card) => res.send(card))
+    .then((movie) => res.send(movie))
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequestError('Некорректные данные'));
@@ -45,15 +45,15 @@ module.exports.createMovie = (req, res, next) => {
 };
 // удалить фильм
 module.exports.deleteMovie = (req, res, next) => {
-  const id = req.params.cardId;
+  const id = req.params.movieId;
   Movie.findById(id)
     .then((movie) => {
       if (!movie) {
         next(new NotFoundError('Фильм не найден'));
       } else if (String(movie.owner) === req.user._id) {
         Movie.findByIdAndRemove(id)
-          .then(() => res.status(200).send({ message: 'Фильм удален' }))
-          .catch(() => next(new NotFoundError('Фильм не найден')));
+          .then(() => res.status(200).send({ message: 'Фильм удален' }));
+        //  .catch(() => next(new NotFoundError('Фильм не найден')));
       } else {
         throw new ForbiddenError('Нет прав для удаление данного фильма');
       }

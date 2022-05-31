@@ -5,17 +5,17 @@ const { errors } = require('celebrate');
 const routes = require('./routes');
 require('dotenv').config();
 
+const { MONGO_URL, PORT } = require('./utils/constants');
+
 const app = express();
-const { PORT = 3000 } = process.env;
 
 // подключаю mongo
-mongoose.connect('mongodb://localhost:27017/moviesdb');
+mongoose.connect(MONGO_URL);
 
 /* импорт логгеров */
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 /* импорт ошибок */
-const NotFoundError = require('./errors/notFoundError');
 const handleError = require('./middlewares/handleError');
 
 /* обработка HTTP POST запросов, перевод данных в json */
@@ -52,19 +52,14 @@ app.use((req, res, next) => {
   return next();
 });
 
-/* Краш-тест сервера  */
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
-  }, 0);
-});
+// /* Краш-тест сервера  */
+// app.get('/crash-test', () => {
+//   setTimeout(() => {
+//     throw new Error('Сервер сейчас упадёт');
+//   }, 0);
+// });
 
-app.use('/', routes);
-
-/* ошибка при не найденной странице */
-app.use('*', () => {
-  throw new NotFoundError('Страница не найдена');
-});
+app.use(routes);
 
 /* запуск логгера ошибок после обработчиков роутов и до обработчиков ошибок */
 app.use(errorLogger);

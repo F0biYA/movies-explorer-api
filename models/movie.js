@@ -5,7 +5,7 @@ const movieSchema = new mongoose.Schema({
   // country — страна создания фильма. Обязательное поле-строка.
   country: {
     type: String,
-    required: true,
+    required: false,
   },
   // director — режиссёр фильма. Обязательное поле-строка.
   director: {
@@ -67,12 +67,12 @@ const movieSchema = new mongoose.Schema({
     unique: true,
   },
   // nameRU — название фильма на русском языке. Обязательное поле-строка.
-  nameRu: {
+  nameRU: {
     type: String,
     required: true,
   },
   // nameEN — название фильма на английском языке. Обязательное поле-строка.
-  nameEn: {
+  nameEN: {
     type: String,
     required: true,
   },
