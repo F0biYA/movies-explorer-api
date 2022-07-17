@@ -64,7 +64,7 @@ const movieSchema = new mongoose.Schema({
   movieId: {
     type: Number,
     require: true,
-    unique: true,
+    // unique: true,
   },
   // nameRU — название фильма на русском языке. Обязательное поле-строка.
   nameRU: {
